@@ -6,12 +6,14 @@ use egui::{Color32, ColorImage};
 
 use crate::Game;
 
-pub fn calender_bar_2(games: &mut Vec<Game>) {
+pub fn calender_bar_2_visualizer(games: &Vec<Game>) -> Image {
+    let mut games = games.clone();
+
     let first_match_time = games.first().unwrap().start_time.unwrap();
     let last_match_time = games.last().unwrap().start_time.unwrap();
 
     let start_date = Utc.timestamp_opt(first_match_time, 0).unwrap();
-    let end_date = Utc.timestamp_opt(1672492482, 0).unwrap();
+    let end_date = Utc.timestamp_opt(last_match_time, 0).unwrap();
 
     let days_played = (end_date - start_date).num_days();
     let weeks = days_played.div(7) + 1;
@@ -79,4 +81,5 @@ pub fn calender_bar_2(games: &mut Vec<Game>) {
     }
 
     bitmap.save("visuals/calender_bar_days_played.bmp");
+    bitmap
 }

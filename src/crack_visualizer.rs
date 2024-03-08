@@ -4,9 +4,9 @@ use egui::ColorImage;
 
 use crate::Game;
 
-pub fn crack_visualizer(
-    games: &mut Vec<Game>
-) {
+pub fn crack_visualizer(games: &Vec<Game>) -> Image {
+    let mut games = games.clone();
+
     let first_match_time = games.first().unwrap().start_time.unwrap();
     let last_match_time = games.last().unwrap().start_time.unwrap();
 
@@ -17,7 +17,7 @@ pub fn crack_visualizer(
 
     let height = 40;
     let half_height = height / 2;
-    let mut bipmap = Image::new(
+    let mut bitmap = Image::new(
         days_played as u32 + 1,
         height,
     );
@@ -49,7 +49,7 @@ pub fn crack_visualizer(
 
         let not_played_color = Pixel::new(255, 255, 255);
         for y in 0..height {
-            bipmap.set_pixel(x, y, not_played_color);
+            bitmap.set_pixel(x, y, not_played_color);
         }
 
         if games_played > 0 {
@@ -60,8 +60,8 @@ pub fn crack_visualizer(
             let green_color = 255 / games_played * games_won;
 
             for y in 0..games_played {
-                bipmap.set_pixel(x, half_height + y, other);
-                bipmap.set_pixel(x, half_height - y, other);
+                bitmap.set_pixel(x, half_height + y, other);
+                bitmap.set_pixel(x, half_height - y, other);
             }
         }
 
@@ -69,5 +69,6 @@ pub fn crack_visualizer(
         x += 1;
     }
 
-    bipmap.save("visuals/crack.bmp");
+    bitmap.save("visuals/crack.bmp");
+    bitmap
 }

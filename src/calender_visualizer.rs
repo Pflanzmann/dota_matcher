@@ -2,16 +2,17 @@ use std::ops::Div;
 
 use bmp::{Image, Pixel};
 use chrono::{Datelike, Duration, TimeZone, Utc, Weekday};
-use egui::{Color32, ColorImage};
 
 use crate::Game;
 
-pub fn calender(games: &mut Vec<Game>) -> ColorImage {
+pub fn calender_visualizer(games: &Vec<Game>) -> Image {
+    let mut games = games.clone();
+
     let first_match_time = games.first().unwrap().start_time.unwrap();
     let last_match_time = games.last().unwrap().start_time.unwrap();
 
     let start_date = Utc.timestamp_opt(first_match_time, 0).unwrap();
-    let end_date = Utc.timestamp_opt(Utc::now().timestamp(), 0).unwrap();
+    let end_date = Utc.timestamp_opt(last_match_time, 0).unwrap();
 
     let days_played = (end_date - start_date).num_days();
     let weeks = days_played.div(7) + 1;
@@ -22,7 +23,6 @@ pub fn calender(games: &mut Vec<Game>) -> ColorImage {
     let width = (weeks * width_multiplier as i64) as u32;
 
     let mut bitmap = Image::new(width, height);
-    let mut color_image = ColorImage::new([width as usize, height as usize], Color32::TRANSPARENT);
 
     let mut date_time = start_date;
     let mut x = 0;
@@ -58,7 +58,6 @@ pub fn calender(games: &mut Vec<Game>) -> ColorImage {
             for local_x in 0..width_multiplier {
                 for local_y in 0..height_multiplier {
                     bitmap.set_pixel(x * width_multiplier + local_x, weekday.num_days_from_monday() * height_multiplier + local_y, black);
-                    color_image[((x * width_multiplier + local_x) as usize, (weekday.num_days_from_monday() * height_multiplier + local_y) as usize)] = Color32::BLACK;
                 }
             }
         } else {
@@ -67,7 +66,6 @@ pub fn calender(games: &mut Vec<Game>) -> ColorImage {
             for local_x in 0..width_multiplier {
                 for local_y in 0..height_multiplier {
                     bitmap.set_pixel(x * width_multiplier + local_x, weekday.num_days_from_monday() * height_multiplier + local_y, not_played_color);
-                    color_image[((x * width_multiplier + local_x) as usize, (weekday.num_days_from_monday() * height_multiplier + local_y) as usize)] = Color32::TRANSPARENT;
                 }
             }
         }
@@ -80,5 +78,5 @@ pub fn calender(games: &mut Vec<Game>) -> ColorImage {
     }
 
     bitmap.save("visuals/calender.bmp");
-    return color_image;
+    bitmap
 }

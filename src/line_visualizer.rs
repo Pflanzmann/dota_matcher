@@ -3,9 +3,9 @@ use chrono::{Datelike, Duration, TimeZone, Utc};
 
 use crate::Game;
 
-pub fn barcode(
-    games: &mut Vec<Game>
-) {
+pub fn line_visualizer(games: &Vec<Game>) -> Image {
+    let mut games = games.clone();
+
     let first_match_time = games.first().unwrap().start_time.unwrap();
     let last_match_time = games.last().unwrap().start_time.unwrap();
 
@@ -15,7 +15,7 @@ pub fn barcode(
     let days_played = (end_date - start_date).num_days();
 
     let height = 1000;
-    let mut bipmap = Image::new(
+    let mut bitmap = Image::new(
         days_played as u32 + 1,
         height,
     );
@@ -50,13 +50,13 @@ pub fn barcode(
             let played_color = Pixel::new(0, 0, 0);
 
             for y in 0..height {
-                bipmap.set_pixel(x, y, played_color);
+                bitmap.set_pixel(x, y, played_color);
             }
         } else {
             let not_played_color = Pixel::new(255, 255, 255);
 
             for y in 0..height {
-                bipmap.set_pixel(x, y, not_played_color);
+                bitmap.set_pixel(x, y, not_played_color);
             }
         }
 
@@ -64,5 +64,6 @@ pub fn barcode(
         x += 1;
     }
 
-    bipmap.save("visuals/barcode.bmp");
+    bitmap.save("visuals/barcode.bmp");
+    bitmap
 }
